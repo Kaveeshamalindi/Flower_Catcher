@@ -2,6 +2,8 @@
 
 A beautiful and interactive browser game built with **HTML, CSS, and JavaScript** where players catch falling flowers using a basket. The game includes scoring, combos, difficulty levels, animations, and sound effects.
 
+Live Demo: https://kaveeshamalindi.github.io/Flower_Catcher/
+
 ---
 
 ## 🎮 Gameplay
