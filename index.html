@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Blossom Catch 🌸</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Nunito',sans-serif;}
+#game{position:relative;width:100vw;height:100vh;overflow:hidden;cursor:none;user-select:none;}
+
+/* ── BACKGROUND ── */
+#sky{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,#3D9BE9 0%,#6CBAED 18%,#9DD3F5 35%,#C0E8F8 50%,#D8F0F2 62%,#CAEAC0 72%,#B0DC9C 82%,#9ACC88 100%);
+}
+
+/* CLOUDS */
+.cloud{position:absolute;pointer-events:none;}
+.cloud span{position:absolute;background:rgba(255,255,255,0.88);border-radius:50%;display:block;}
+
+/* MOUNTAIN */
+#mtn{position:absolute;bottom:28%;left:50%;transform:translateX(-50%);}
+#mtn-body{width:0;height:0;border-left:185px solid transparent;border-right:185px solid transparent;border-bottom:260px solid #C4CED8;position:relative;}
+#mtn-mid{position:absolute;top:80px;left:-130px;width:0;height:0;border-left:130px solid transparent;border-right:130px solid transparent;border-bottom:180px solid #B8C4CE;}
+#mtn-snow{position:absolute;top:-12px;left:-68px;width:0;height:0;border-left:68px solid transparent;border-right:68px solid transparent;border-bottom:100px solid #EEF2F5;}
+#mtn-snow2{position:absolute;top:10px;left:-48px;width:0;height:0;border-left:48px solid transparent;border-right:48px solid transparent;border-bottom:60px solid rgba(255,255,255,0.5);}
+
+/* LAKE */
+#lake{
+  position:absolute;bottom:24%;left:20%;width:60%;height:75px;
+  background:linear-gradient(180deg,#5BA8CC 0%,#4898BE 40%,#3888AE 100%);
+  border-radius:50% 50% 45% 45%;
+  box-shadow:inset 0 8px 18px rgba(255,255,255,0.28);
+}
+#lake-shine{
+  position:absolute;bottom:calc(24% + 18px);left:28%;width:44%;height:30px;
+  background:linear-gradient(180deg,rgba(255,255,255,0.3),transparent);
+  border-radius:50%;pointer-events:none;
+}
+
+/* GROUND */
+#ground{position:absolute;bottom:0;left:0;right:0;height:27%;background:linear-gradient(180deg,#AADA8C 0%,#90C878 45%,#7AB860 100%);}
+#path{
+  position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+  width:230px;height:27%;
+  background:linear-gradient(180deg,#C8BA9A 0%,#B8A888 100%);
+  clip-path:polygon(28% 0%,72% 0%,100% 100%,0% 100%);
+}
+
+/* BRIDGE */
+#bridge{position:absolute;bottom:calc(24% + 38px);left:50%;transform:translateX(-50%);width:140px;}
+#bridge-arch{
+  width:110px;height:36px;margin:0 auto;
+  border:7px solid #7A5030;border-bottom:none;border-radius:55px 55px 0 0;
+  background:transparent;
+}
+#bridge-deck{
+  width:134px;height:10px;background:#7A5030;border-radius:3px;
+  margin:-3px auto 0;
+}
+.b-post{position:absolute;bottom:-28px;width:8px;height:28px;background:#6A4024;border-radius:2px;}
+.b-rail{position:absolute;top:0;width:5px;height:18px;background:#5A3018;border-radius:1px;}
+
+/* FENCE */
+.fence{position:absolute;bottom:27%;display:flex;align-items:flex-end;gap:14px;}
+.fence-post{width:7px;background:#7A5030;border-radius:2px 2px 0 0;}
+.fence-rail{position:absolute;height:4px;background:#8A6040;border-radius:2px;}
+
+/* PAGODA */
+#pagoda{position:absolute;right:9%;bottom:27%;}
+.p-roof{margin:0 auto;background:#C84040;position:relative;}
+.p-wall{margin:0 auto;background:#D09868;}
+.p-eave{margin:0 auto;height:0;}
+
+/* CHERRY TREES */
+.ctree{position:absolute;bottom:20%;}
+.ctree-trunk{background:linear-gradient(90deg,#5A3820,#7A5030);border-radius:3px 3px 0 0;margin:0 auto;}
+.ctree-canopy{position:absolute;border-radius:50%;pointer-events:none;}
+
+/* GROUND DECO FLOWERS */
+.gflower{position:absolute;font-size:16px;pointer-events:none;}
+
+/* ── FALLING FLOWERS ── */
+.flower{
+  position:absolute;width:54px;height:54px;
+  pointer-events:none;will-change:transform,top;z-index:30;
+}
+.flower svg{width:100%;height:100%;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.18));}
+.flower.golden svg{filter:drop-shadow(0 3px 12px rgba(255,215,0,0.9)) drop-shadow(0 0 8px gold);}
+
+/* BG PETALS */
+.bgpetal{
+  position:absolute;pointer-events:none;opacity:0;
+  animation:petalfall linear infinite;
+}
+@keyframes petalfall{
+  0%{opacity:0;transform:translateY(-8vh) rotate(0deg) translateX(0);}
+  5%{opacity:0.55;}
+  80%{opacity:0.45;}
+  100%{opacity:0;transform:translateY(112vh) rotate(540deg) translateX(40px);}
+}
+
+/* ── BASKET ── */
+#basket{
+  position:absolute;bottom:18px;left:calc(50% - 54px);
+  width:108px;height:98px;
+  pointer-events:none;z-index:50;
+  filter:drop-shadow(0 10px 18px rgba(0,0,0,0.32));
+  transition:left 0.025s linear;
+}
+
+/* ── PANELS ── */
+.panel-card{
+  background:rgba(255,255,255,0.93);
+  border:2.5px solid #FFAABB;
+  border-radius:18px;
+  box-shadow:0 4px 18px rgba(255,100,140,0.22);
+}
+
+#scorePanel{
+  position:absolute;top:14px;left:14px;
+  padding:8px 18px 10px;z-index:200;min-width:115px;
+}
+#scorePanel .slabel{font-size:10px;font-weight:800;color:#E85080;letter-spacing:2px;text-transform:uppercase;}
+#scorePanel .sval{font-size:52px;font-weight:900;color:#D01850;line-height:1;text-shadow:0 2px 6px rgba(208,24,80,0.2);}
+
+#timerPanel{
+  position:absolute;top:14px;left:50%;transform:translateX(-50%);
+  padding:9px 22px;
+  display:flex;align-items:center;gap:9px;z-index:200;
+}
+#timerPanel .ticon{font-size:20px;}
+#timerPanel .tval{font-size:20px;font-weight:800;color:#C83060;letter-spacing:1.5px;}
+
+/* TOP RIGHT BUTTONS */
+#topRightBtns{
+  position:absolute;top:14px;right:14px;
+  display:flex;gap:9px;align-items:center;z-index:200;
+}
+
+#pauseBtn{
+  background:linear-gradient(140deg,#A78BFA,#7C3AED);
+  border:none;border-radius:18px;padding:11px 15px;
+  color:white;font-size:13px;font-weight:800;
+  cursor:pointer;letter-spacing:0.5px;
+  box-shadow:0 4px 14px rgba(124,58,237,0.42);
+  display:flex;align-items:center;gap:6px;
+  font-family:inherit;transition:transform 0.12s;
+}
+#pauseBtn:hover{transform:scale(1.06);}
+
+#newGameBtn{
+  background:linear-gradient(140deg,#34D399,#059669);
+  border:none;border-radius:18px;padding:11px 15px;
+  color:white;font-size:13px;font-weight:800;
+  cursor:pointer;letter-spacing:0.5px;
+  box-shadow:0 4px 14px rgba(5,150,105,0.42);
+  display:flex;align-items:center;gap:6px;
+  font-family:inherit;transition:transform 0.12s;
+}
+#newGameBtn:hover{transform:scale(1.06);}
+
+#exitBtn{
+  background:linear-gradient(140deg,#FF5068,#DE1B40);
+  border:none;border-radius:18px;padding:11px 15px;
+  color:white;font-size:13px;font-weight:800;
+  cursor:pointer;letter-spacing:0.5px;
+  box-shadow:0 4px 14px rgba(220,30,60,0.42);
+  display:flex;align-items:center;gap:6px;
+  font-family:inherit;transition:transform 0.12s;
+}
+#exitBtn:hover{transform:scale(1.06);}
+#exitBtn .ex{font-size:16px;}
+
+#sideBtns{
+  position:absolute;top:76px;right:14px;
+  display:flex;flex-direction:column;gap:9px;z-index:200;
+}
+.sbtn{
+  width:44px;height:44px;
+  background:rgba(255,255,255,0.92);
+  border:2px solid #FFAABB;border-radius:50%;
+  cursor:pointer;font-size:19px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 10px rgba(255,100,140,0.2);
+  transition:transform 0.12s;
+}
+.sbtn:hover{transform:scale(1.12);}
+.sbtn.off{opacity:0.45;filter:grayscale(0.5);}
+
+#collection{
+  position:absolute;left:14px;top:100px;
+  padding:12px 14px;z-index:200;min-width:124px;
+}
+#collection .ctitle{
+  font-size:10px;font-weight:800;color:#E85080;
+  letter-spacing:2px;text-transform:uppercase;
+  text-align:center;margin-bottom:9px;
+}
+.crow{
+  display:flex;align-items:center;gap:8px;padding:3.5px 0;
+  border-bottom:1px solid rgba(255,160,190,0.3);
+}
+.crow:last-child{border:none;}
+.cicon{width:28px;height:28px;flex-shrink:0;}
+.ccount{font-size:16px;font-weight:800;color:#B02850;min-width:26px;}
+
+#infoBar{
+  position:absolute;bottom:14px;left:50%;transform:translateX(-50%);
+  padding:9px 22px;
+  font-size:13px;font-weight:700;color:#C02858;
+  white-space:nowrap;z-index:200;
+  display:flex;align-items:center;gap:9px;
+}
+
+/* COMBO DISPLAY */
+#comboDisplay{
+  position:absolute;top:90px;left:50%;transform:translateX(-50%);
+  z-index:200;pointer-events:none;opacity:0;
+  transition:opacity 0.3s;
+  text-align:center;
+}
+#comboDisplay .combo-text{
+  font-size:22px;font-weight:900;color:#FF4488;
+  text-shadow:0 0 12px rgba(255,100,180,0.7);
+  animation:comboPop 0.3s ease;
+}
+@keyframes comboPop{
+  0%{transform:scale(0.5);}
+  60%{transform:scale(1.2);}
+  100%{transform:scale(1);}
+}
+
+/* HIGH SCORE PANEL */
+#highScorePanel{
+  position:absolute;top:14px;left:50%;transform:translateX(-50%);
+  margin-top:60px;
+}
+
+/* CATCH FLASH */
+#flash{
+  position:absolute;pointer-events:none;
+  font-size:24px;font-weight:900;color:#E02060;
+  z-index:300;opacity:0;
+  text-shadow:0 0 12px rgba(255,200,220,0.9);
+  transition:opacity 0.1s;
+}
+
+/* ── START SCREEN ── */
+#startScreen{
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,155,175,0.72),rgba(195,140,255,0.68),rgba(130,195,255,0.68));
+  backdrop-filter:blur(10px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:500;
+}
+#startScreen h1{
+  font-size:54px;font-weight:900;color:white;
+  text-shadow:0 4px 18px rgba(220,70,120,0.55);
+  margin-bottom:6px;
+}
+#startScreen .subtitle{font-size:16px;color:rgba(255,255,255,0.92);margin-bottom:20px;font-weight:600;}
+#startScreen .best-score-display{
+  font-size:14px;color:rgba(255,255,255,0.85);margin-bottom:26px;font-weight:700;
+  background:rgba(255,255,255,0.18);padding:8px 22px;border-radius:20px;
+}
+.difficulty-row{
+  display:flex;gap:12px;margin-bottom:28px;
+}
+.diff-btn{
+  padding:10px 22px;border:2.5px solid rgba(255,255,255,0.7);border-radius:22px;
+  background:rgba(255,255,255,0.18);color:white;font-size:14px;font-weight:800;
+  cursor:pointer;font-family:inherit;transition:all 0.15s;
+}
+.diff-btn:hover,.diff-btn.active{background:rgba(255,255,255,0.42);border-color:white;transform:scale(1.05);}
+#startBtn{
+  padding:14px 40px;
+  background:linear-gradient(140deg,#FF6EA4,#DE2868);
+  border:none;border-radius:32px;
+  color:white;font-size:19px;font-weight:800;
+  cursor:pointer;font-family:inherit;
+  box-shadow:0 6px 22px rgba(220,40,100,0.45);
+  transition:transform 0.13s;
+}
+#startBtn:hover{transform:scale(1.07);}
+.how-to-play{
+  margin-top:22px;font-size:13px;color:rgba(255,255,255,0.75);font-weight:600;
+  text-align:center;line-height:1.8;
+}
+
+/* GAME OVER */
+#gameOver{
+  position:absolute;inset:0;
+  background:rgba(40,0,20,0.55);
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  z-index:500;backdrop-filter:blur(8px);
+}
+#goCard{
+  background:white;border-radius:28px;padding:36px 52px;text-align:center;
+  box-shadow:0 12px 40px rgba(0,0,0,0.35);min-width:320px;
+}
+#goCard h2{font-size:32px;color:#D01850;margin-bottom:6px;}
+#goScore{font-size:72px;font-weight:900;color:#D01850;line-height:1;}
+#goCard .gosub{font-size:14px;color:#888;margin-top:4px;}
+.go-breakdown{
+  margin-top:18px;border-top:1px solid #FFD0DE;padding-top:14px;
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:left;
+}
+.go-item{
+  display:flex;align-items:center;gap:7px;
+  font-size:13px;font-weight:700;color:#B02850;
+}
+.go-item .gi{width:22px;height:22px;}
+.go-stat{
+  margin-top:14px;padding:10px 16px;
+  background:#FFF0F5;border-radius:12px;
+  font-size:13px;color:#C02858;font-weight:700;
+  display:flex;justify-content:space-between;gap:20px;
+}
+.go-new-best{
+  margin-top:10px;font-size:15px;font-weight:900;color:#FF4488;
+  animation:comboPop 0.5s ease;
+  display:none;
+}
+.go-btn-row{
+  margin-top:22px;display:flex;gap:10px;justify-content:center;
+}
+.go-btn{
+  padding:12px 24px;border:none;border-radius:24px;
+  font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;
+}
+.go-btn.primary{
+  background:linear-gradient(140deg,#FF6EA4,#DE2868);color:white;
+  box-shadow:0 5px 16px rgba(220,40,100,0.38);
+}
+.go-btn.secondary{
+  background:linear-gradient(140deg,#A78BFA,#7C3AED);color:white;
+  box-shadow:0 5px 16px rgba(124,58,237,0.32);
+}
+.go-btn.tertiary{
+  background:linear-gradient(140deg,#34D399,#059669);color:white;
+  box-shadow:0 5px 16px rgba(5,150,105,0.32);
+}
+
+/* PAUSE SCREEN */
+#pauseScreen{
+  position:absolute;inset:0;
+  background:rgba(10,5,30,0.58);
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  z-index:400;backdrop-filter:blur(12px);
+}
+#pauseCard{
+  background:white;border-radius:28px;padding:38px 52px;text-align:center;
+  box-shadow:0 12px 40px rgba(0,0,0,0.35);min-width:300px;
+}
+#pauseCard h2{font-size:30px;font-weight:900;color:#7C3AED;margin-bottom:6px;}
+#pauseCard .psub{font-size:14px;color:#888;margin-bottom:22px;font-weight:600;}
+.pause-score-big{font-size:64px;font-weight:900;color:#D01850;line-height:1;margin-bottom:4px;}
+.pause-score-label{font-size:12px;font-weight:800;color:#E85080;letter-spacing:2px;text-transform:uppercase;margin-bottom:18px;}
+.pause-collection{
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:22px;
+  border-top:1px solid #FFD0DE;padding-top:14px;
+}
+.pc-item{display:flex;align-items:center;gap:5px;font-size:13px;font-weight:800;color:#B02850;}
+.pc-item .pci{width:22px;height:22px;}
+.pause-btn-row{display:flex;gap:10px;justify-content:center;}
+.pause-btn{
+  padding:12px 24px;border:none;border-radius:24px;
+  font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;
+}
+.pause-btn.resume{background:linear-gradient(140deg,#A78BFA,#7C3AED);color:white;box-shadow:0 4px 14px rgba(124,58,237,0.38);}
+.pause-btn.newgame{background:linear-gradient(140deg,#34D399,#059669);color:white;box-shadow:0 4px 14px rgba(5,150,105,0.32);}
+.pause-btn.exit{background:linear-gradient(140deg,#FF5068,#DE1B40);color:white;box-shadow:0 4px 14px rgba(220,30,60,0.38);}
+.pause-timer{font-size:13px;color:#C83060;font-weight:700;margin-bottom:18px;}
+
+/* CURSOR */
+#cursor{position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
+
+/* LEVEL UP BADGE */
+#levelUpBadge{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  z-index:300;pointer-events:none;opacity:0;
+  transition:opacity 0.4s;text-align:center;
+}
+#levelUpBadge .lub-text{
+  font-size:36px;font-weight:900;color:#FFD700;
+  text-shadow:0 0 20px rgba(255,215,0,0.8),0 2px 8px rgba(0,0,0,0.4);
+}
+#levelUpBadge .lub-sub{font-size:16px;font-weight:800;color:white;text-shadow:0 2px 6px rgba(0,0,0,0.5);}
+
+/* STREAK FLAMES */
+#streakDisplay{
+  position:absolute;left:14px;bottom:62px;z-index:200;
+  display:flex;align-items:center;gap:6px;opacity:0;transition:opacity 0.3s;
+}
+#streakDisplay .streak-fire{font-size:22px;}
+#streakDisplay .streak-count{font-size:18px;font-weight:900;color:#FF6010;}
+</style>
+</head>
+<body>
+<div id="game">
+
+<!-- SKY -->
+<div id="sky"></div>
+
+<!-- CLOUDS -->
+<div class="cloud" style="top:7%;left:12%">
+  <span style="width:75px;height:38px;top:12px;left:14px"></span>
+  <span style="width:52px;height:32px;top:0;left:34px"></span>
+  <span style="width:95px;height:24px;top:22px;left:0"></span>
+</div>
+<div class="cloud" style="top:11%;right:16%">
+  <span style="width:65px;height:30px;top:9px;left:10px"></span>
+  <span style="width:48px;height:26px;top:0;left:28px"></span>
+  <span style="width:85px;height:22px;top:18px;left:0"></span>
+</div>
+<div class="cloud" style="top:5%;left:52%">
+  <span style="width:58px;height:28px;top:7px;left:12px"></span>
+  <span style="width:74px;height:20px;top:16px;left:0"></span>
+</div>
+
+<!-- MOUNTAIN -->
+<div id="mtn">
+  <div id="mtn-body">
+    <div id="mtn-mid"></div>
+    <div id="mtn-snow"><div id="mtn-snow2"></div></div>
+  </div>
+</div>
+
+<!-- LAKE -->
+<div id="lake"></div>
+<div id="lake-shine"></div>
+
+<!-- BRIDGE -->
+<div id="bridge" style="position:absolute;bottom:calc(24% + 36px);left:50%;transform:translateX(-50%);width:140px;">
+  <div id="bridge-arch"></div>
+  <div id="bridge-deck" style="position:relative;">
+    <div class="b-post" style="left:6px;"></div>
+    <div class="b-post" style="right:6px;"></div>
+    <div class="b-rail" style="left:14px;"></div>
+    <div class="b-rail" style="left:30px;"></div>
+    <div class="b-rail" style="right:30px;"></div>
+    <div class="b-rail" style="right:14px;"></div>
+  </div>
+</div>
+
+<!-- GROUND & PATH -->
+<div id="ground"></div>
+<div id="path"></div>
+
+<!-- LEFT FENCE -->
+<div class="fence" style="left:0;width:22%;padding-left:12px;">
+  <div class="fence-post" style="height:34px;"></div>
+  <div class="fence-post" style="height:38px;"></div>
+  <div class="fence-post" style="height:32px;"></div>
+  <div class="fence-post" style="height:36px;"></div>
+  <div class="fence-post" style="height:30px;"></div>
+  <div class="fence-rail" style="width:85%;bottom:22px;left:8px;"></div>
+  <div class="fence-rail" style="width:85%;bottom:10px;left:8px;"></div>
+</div>
+
+<!-- PAGODA -->
+<div id="pagoda">
+  <div class="p-roof" style="width:28px;height:4px;border-radius:2px;"></div>
+  <div class="p-eave" style="width:46px;border-left:23px solid transparent;border-right:23px solid transparent;border-bottom:14px solid #B83030;"></div>
+  <div class="p-wall" style="width:38px;height:14px;"></div>
+  <div class="p-roof" style="width:44px;height:4px;border-radius:2px;margin-top:1px;"></div>
+  <div class="p-eave" style="width:64px;border-left:32px solid transparent;border-right:32px solid transparent;border-bottom:16px solid #B83030;"></div>
+  <div class="p-wall" style="width:54px;height:18px;"></div>
+  <div class="p-roof" style="width:62px;height:5px;border-radius:2px;margin-top:1px;"></div>
+  <div class="p-eave" style="width:84px;border-left:42px solid transparent;border-right:42px solid transparent;border-bottom:18px solid #B83030;"></div>
+  <div class="p-wall" style="width:72px;height:36px;display:flex;justify-content:center;align-items:flex-end;padding-bottom:0;">
+    <div style="width:18px;height:22px;background:#5A3820;border-radius:3px 3px 0 0;"></div>
+  </div>
+</div>
+
+<!-- LANTERNS left -->
+<div style="position:absolute;bottom:27%;left:20%;display:flex;gap:30px;z-index:6;">
+  <div style="display:flex;flex-direction:column;align-items:center;">
+    <div style="width:4px;height:28px;background:#6A4028;"></div>
+    <div style="width:14px;height:18px;background:#D44030;border-radius:35%;border:1px solid #A83020;"></div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;">
+    <div style="width:4px;height:28px;background:#6A4028;"></div>
+    <div style="width:14px;height:18px;background:#D44030;border-radius:35%;border:1px solid #A83020;"></div>
+  </div>
+</div>
+
+<!-- LEFT CHERRY TREE -->
+<div class="ctree" style="left:-20px;">
+  <div style="position:relative;width:210px;height:260px;">
+    <div class="ctree-trunk" style="position:absolute;bottom:0;left:88px;width:26px;height:110px;"></div>
+    <div style="position:absolute;bottom:80px;left:92px;width:88px;height:8px;background:#6A4028;border-radius:4px;transform:rotate(-28deg);transform-origin:left center;"></div>
+    <div style="position:absolute;bottom:90px;left:95px;width:72px;height:7px;background:#6A4028;border-radius:4px;transform:rotate(22deg);transform-origin:left center;"></div>
+    <div class="ctree-canopy" style="top:0;left:5px;width:195px;height:185px;background:radial-gradient(ellipse at 50% 58%,#FFC8D5 0%,#FFB0C8 38%,#F088A8 65%,transparent 100%);"></div>
+    <div class="ctree-canopy" style="top:18px;left:28px;width:145px;height:125px;background:radial-gradient(ellipse,#FFD8E2 25%,#FFBCCF 60%,transparent 100%);"></div>
+    <div class="ctree-canopy" style="top:55px;left:-5px;width:115px;height:95px;background:radial-gradient(ellipse,#FFB8C8 30%,transparent 80%);"></div>
+    <div class="ctree-canopy" style="top:35px;right:-5px;width:120px;height:105px;background:radial-gradient(ellipse,#FFC0D0 30%,transparent 80%);"></div>
+    <div class="ctree-canopy" style="top:90px;left:30px;width:90px;height:80px;background:radial-gradient(ellipse,#FFD0DF 40%,transparent 85%);"></div>
+  </div>
+</div>
+
+<!-- RIGHT CHERRY TREE -->
+<div class="ctree" style="right:-20px;">
+  <div style="position:relative;width:210px;height:260px;">
+    <div class="ctree-trunk" style="position:absolute;bottom:0;left:95px;width:26px;height:115px;"></div>
+    <div style="position:absolute;bottom:88px;left:45px;width:82px;height:8px;background:#6A4028;border-radius:4px;transform:rotate(26deg);transform-origin:right center;"></div>
+    <div style="position:absolute;bottom:82px;left:90px;width:75px;height:7px;background:#6A4028;border-radius:4px;transform:rotate(-22deg);transform-origin:left center;"></div>
+    <div class="ctree-canopy" style="top:0;left:10px;width:190px;height:190px;background:radial-gradient(ellipse at 50% 58%,#FFC8D5 0%,#FFB0C8 38%,#E888A8 65%,transparent 100%);"></div>
+    <div class="ctree-canopy" style="top:22px;left:35px;width:150px;height:120px;background:radial-gradient(ellipse,#FFD0DF 30%,transparent 80%);"></div>
+    <div class="ctree-canopy" style="top:48px;left:50px;width:110px;height:95px;background:radial-gradient(ellipse,#FFB8C8 30%,transparent 80%);"></div>
+    <div class="ctree-canopy" style="top:100px;left:20px;width:95px;height:80px;background:radial-gradient(ellipse,#FFD8E5 40%,transparent 85%);"></div>
+    <div class="ctree-canopy" style="top:70px;right:0;width:100px;height:85px;background:radial-gradient(ellipse,#FFC0D0 35%,transparent 80%);"></div>
+  </div>
+</div>
+
+<!-- GROUND FLOWERS -->
+<div class="gflower" style="left:7%;bottom:27.5%">🌸</div>
+<div class="gflower" style="left:13%;bottom:28.2%">🌺</div>
+<div class="gflower" style="left:17%;bottom:27.2%">🌼</div>
+<div class="gflower" style="left:78%;bottom:28%">🌷</div>
+<div class="gflower" style="left:83%;bottom:27.5%">🌸</div>
+<div class="gflower" style="left:87%;bottom:28.4%">🌺</div>
+<div class="gflower" style="left:91%;bottom:27.2%">🌼</div>
+
+<!-- BASKET -->
+<div id="basket">
+  <svg viewBox="0 0 108 98" xmlns="http://www.w3.org/2000/svg">
+    <path d="M27 38 Q54 6 81 38" stroke="rgba(80,40,0,0.18)" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <path d="M27 36 Q54 4 81 36" stroke="#9B7040" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+    <path d="M27 36 Q54 4 81 36" stroke="#C49A58" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="54" cy="92" rx="40" ry="5" fill="rgba(60,30,0,0.15)"/>
+    <path d="M12 54 Q14 90 54 93 Q94 90 96 54 Z" fill="#C8904A"/>
+    <path d="M12 54 Q14 90 54 93 Q94 90 96 54 Z" fill="#D4A060"/>
+    <path d="M13 61 Q54 74 95 61" stroke="#A87038" stroke-width="2.2" fill="none"/>
+    <path d="M13 69 Q54 82 95 69" stroke="#A87038" stroke-width="2.2" fill="none"/>
+    <path d="M15 77 Q54 89 93 77" stroke="#A87038" stroke-width="2.2" fill="none"/>
+    <line x1="22" y1="54" x2="18" y2="91" stroke="#A87038" stroke-width="1.8"/>
+    <line x1="31" y1="54" x2="28" y2="92" stroke="#A87038" stroke-width="1.8"/>
+    <line x1="40" y1="54" x2="38" y2="93" stroke="#A87038" stroke-width="1.8"/>
+    <line x1="47" y1="54" x2="47" y2="93" stroke="#A87038" stroke-width="1.8"/>
+    <line x1="54" y1="54" x2="54" y2="93" stroke="#A87038" stroke-width="1.8"/>
+    <line x1="61" y1="54" x2="61" y2="93" stroke="#A87038" stroke-width="1.8"/>
+    <line x1="68" y1="54" x2="68" y2="93" stroke="#A87038" stroke-width="1.8"/>
+    <line x1="77" y1="54" x2="80" y2="92" stroke="#A87038" stroke-width="1.8"/>
+    <line x1="86" y1="54" x2="90" y2="91" stroke="#A87038" stroke-width="1.8"/>
+    <ellipse cx="54" cy="54" rx="42" ry="11" fill="#C8904A"/>
+    <ellipse cx="54" cy="54" rx="42" ry="11" fill="none" stroke="#8B6030" stroke-width="3.2"/>
+    <ellipse cx="54" cy="52" rx="30" ry="6" fill="none" stroke="rgba(220,170,90,0.5)" stroke-width="1.5"/>
+    <ellipse cx="41" cy="50" rx="10" ry="6.5" fill="#FF90B8" transform="rotate(-18,41,50)"/>
+    <ellipse cx="41" cy="50" rx="8" ry="4.5" fill="#FFB0CC" transform="rotate(-18,41,50)" opacity="0.7"/>
+    <ellipse cx="67" cy="50" rx="10" ry="6.5" fill="#FF90B8" transform="rotate(18,67,50)"/>
+    <ellipse cx="67" cy="50" rx="8" ry="4.5" fill="#FFB0CC" transform="rotate(18,67,50)" opacity="0.7"/>
+    <circle cx="54" cy="50" r="5" fill="#FF60A0"/>
+    <circle cx="54" cy="50" r="3" fill="#FF80B8"/>
+    <path d="M49 52 Q44 60 40 57" stroke="#FF80B0" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M59 52 Q64 60 68 57" stroke="#FF80B0" stroke-width="3" fill="none" stroke-linecap="round"/>
+  </svg>
+</div>
+
+<!-- ── UI PANELS ── -->
+<div id="scorePanel" class="panel-card">
+  <div class="slabel">Score</div>
+  <div class="sval" id="scoreVal">00</div>
+</div>
+
+<div id="timerPanel" class="panel-card">
+  <span class="ticon">⏱</span>
+  <span class="tval" id="timeVal">01:00</span>
+</div>
+
+<!-- TOP RIGHT BUTTONS -->
+<div id="topRightBtns">
+  <button id="pauseBtn" onclick="togglePause()">⏸ PAUSE</button>
+  <button id="newGameBtn" onclick="newGame()">🔄 NEW</button>
+  <button id="exitBtn" onclick="exitGame()"><span class="ex">✕</span> EXIT</button>
+</div>
+
+<!-- SIDE BUTTONS -->
+<div id="sideBtns">
+  <div class="sbtn" id="musicBtn" onclick="toggleMusic()" title="Music">🎵</div>
+  <div class="sbtn" id="sfxBtn" onclick="toggleSFX()" title="Sound FX">🔊</div>
+</div>
+
+<!-- COLLECTION PANEL -->
+<div id="collection" class="panel-card">
+  <div class="ctitle">Collected</div>
+  <div class="crow"><span class="cicon" id="fi0"></span><span class="ccount" id="fc0">00</span></div>
+  <div class="crow"><span class="cicon" id="fi1"></span><span class="ccount" id="fc1">00</span></div>
+  <div class="crow"><span class="cicon" id="fi2"></span><span class="ccount" id="fc2">00</span></div>
+  <div class="crow"><span class="cicon" id="fi3"></span><span class="ccount" id="fc3">00</span></div>
+  <div class="crow"><span class="cicon" id="fi4"></span><span class="ccount" id="fc4">00</span></div>
+  <div class="crow"><span class="cicon" id="fi5"></span><span class="ccount" id="fc5">00</span></div>
+</div>
+
+<!-- COMBO DISPLAY -->
+<div id="comboDisplay">
+  <div class="combo-text" id="comboText"></div>
+</div>
+
+<!-- STREAK DISPLAY -->
+<div id="streakDisplay">
+  <span class="streak-fire">🔥</span>
+  <span class="streak-count" id="streakCount">0</span>
+</div>
+
+<!-- LEVEL UP BADGE -->
+<div id="levelUpBadge">
+  <div class="lub-text">⭐ SPEED UP! ⭐</div>
+  <div class="lub-sub">Flowers falling faster!</div>
+</div>
+
+<!-- INSTRUCTIONS BAR -->
+<div id="infoBar" class="panel-card">🌸 Move the bucket to collect flowers!</div>
+
+<!-- CATCH FLASH -->
+<div id="flash"></div>
+
+<!-- START SCREEN -->
+<div id="startScreen">
+  <h1>🌸 Blossom Catch 🌸</h1>
+  <p class="subtitle">Catch falling flowers with your basket!</p>
+  <div class="best-score-display" id="bestScoreDisplay">🏆 Best: 0 flowers</div>
+  <div class="difficulty-row">
+    <button class="diff-btn active" id="diff-easy" onclick="setDifficulty('easy')">🌿 Easy</button>
+    <button class="diff-btn" id="diff-normal" onclick="setDifficulty('normal')">🌸 Normal</button>
+    <button class="diff-btn" id="diff-hard" onclick="setDifficulty('hard')">🔥 Hard</button>
+  </div>
+  <button id="startBtn" onclick="startGame()">Start Game 🎮</button>
+  <div class="how-to-play">
+    🖱 Move your mouse / finger to control the basket<br>
+    ⭐ Golden flowers are worth <strong>3 points</strong><br>
+    🔥 Catch combos for bonus score!
+  </div>
+</div>
+
+<!-- GAME OVER -->
+<div id="gameOver">
+  <div id="goCard">
+    <h2>🌸 Game Over! 🌸</h2>
+    <div id="goScore">0</div>
+    <div class="gosub">flowers collected</div>
+    <div class="go-new-best" id="goNewBest">🎉 NEW HIGH SCORE! 🎉</div>
+    <div class="go-stat">
+      <span>🏆 Best Ever</span>
+      <span id="goBest">0</span>
+    </div>
+    <div class="go-stat">
+      <span>🔥 Best Combo</span>
+      <span id="goCombo">0x</span>
+    </div>
+    <div class="go-breakdown" id="goBreakdown"></div>
+    <div class="go-btn-row">
+      <button class="go-btn primary" onclick="restartGame()">▶ Play Again</button>
+      <button class="go-btn tertiary" onclick="goToStart()">🏠 Menu</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAUSE SCREEN -->
+<div id="pauseScreen">
+  <div id="pauseCard">
+    <h2>⏸ Paused</h2>
+    <p class="psub">Game is paused</p>
+    <div class="pause-score-big" id="pauseScore">00</div>
+    <div class="pause-score-label">Current Score</div>
+    <div class="pause-timer" id="pauseTimer"></div>
+    <div class="pause-collection" id="pauseCollection"></div>
+    <div class="pause-btn-row">
+      <button class="pause-btn resume" onclick="togglePause()">▶ Resume</button>
+      <button class="pause-btn newgame" onclick="newGame()">🔄 New Game</button>
+      <button class="pause-btn exit" onclick="exitGame()">✕ Exit</button>
+    </div>
+  </div>
+</div>
+
+<!-- CUSTOM CURSOR -->
+<div id="cursor">
+  <svg width="26" height="26" viewBox="0 0 26 26">
+    <circle cx="13" cy="13" r="7" fill="#FF80A0" opacity="0.65"/>
+    <circle cx="13" cy="13" r="3" fill="#D02060"/>
+  </svg>
+</div>
+
+<script>
+// ─── FLOWER DEFINITIONS ───────────────────────────────────────────────────────
+const FLOWERS = [
+  {name:'Cherry',
+   svg:`<svg viewBox="0 0 60 60"><g transform="translate(30,30)">
+    <ellipse rx="9" ry="17" fill="#FFB7C5" transform="rotate(0) translate(0,-9)"/>
+    <ellipse rx="9" ry="17" fill="#FFAABB" transform="rotate(72) translate(0,-9)"/>
+    <ellipse rx="9" ry="17" fill="#FFB7C5" transform="rotate(144) translate(0,-9)"/>
+    <ellipse rx="9" ry="17" fill="#FFAABB" transform="rotate(216) translate(0,-9)"/>
+    <ellipse rx="9" ry="17" fill="#FFB7C5" transform="rotate(288) translate(0,-9)"/>
+    <circle r="7" fill="#FFF0A0"/>
+    <circle r="3.5" fill="#FFD020"/>
+    <circle cx="0" cy="-3" r="1" fill="#FF8080"/>
+    <circle cx="3" cy="1" r="1" fill="#FF8080"/>
+    <circle cx="-3" cy="1" r="1" fill="#FF8080"/>
+   </g></svg>`},
+  {name:'Daisy',
+   svg:`<svg viewBox="0 0 60 60"><g transform="translate(30,30)">
+    <ellipse rx="7" ry="16" fill="#F2F2F0" transform="rotate(0) translate(0,-9)"/>
+    <ellipse rx="7" ry="16" fill="#E8E8E5" transform="rotate(45) translate(0,-9)"/>
+    <ellipse rx="7" ry="16" fill="#F2F2F0" transform="rotate(90) translate(0,-9)"/>
+    <ellipse rx="7" ry="16" fill="#E8E8E5" transform="rotate(135) translate(0,-9)"/>
+    <ellipse rx="7" ry="16" fill="#F2F2F0" transform="rotate(180) translate(0,-9)"/>
+    <ellipse rx="7" ry="16" fill="#E8E8E5" transform="rotate(225) translate(0,-9)"/>
+    <ellipse rx="7" ry="16" fill="#F2F2F0" transform="rotate(270) translate(0,-9)"/>
+    <ellipse rx="7" ry="16" fill="#E8E8E5" transform="rotate(315) translate(0,-9)"/>
+    <circle r="9" fill="#FFD020"/>
+    <circle r="5" fill="#E8A010"/>
+   </g></svg>`},
+  {name:'Cosmos',
+   svg:`<svg viewBox="0 0 60 60"><g transform="translate(30,30)">
+    <ellipse rx="10" ry="18" fill="#C8A8F0" transform="rotate(0) translate(0,-9)"/>
+    <ellipse rx="10" ry="18" fill="#B898E0" transform="rotate(60) translate(0,-9)"/>
+    <ellipse rx="10" ry="18" fill="#C8A8F0" transform="rotate(120) translate(0,-9)"/>
+    <ellipse rx="10" ry="18" fill="#B898E0" transform="rotate(180) translate(0,-9)"/>
+    <ellipse rx="10" ry="18" fill="#C8A8F0" transform="rotate(240) translate(0,-9)"/>
+    <ellipse rx="10" ry="18" fill="#B898E0" transform="rotate(300) translate(0,-9)"/>
+    <circle r="7" fill="#FFF080"/>
+    <circle r="3.5" fill="#E0C000"/>
+   </g></svg>`},
+  {name:'Sunflower',
+   svg:`<svg viewBox="0 0 60 60"><g transform="translate(30,30)">
+    <ellipse rx="7" ry="15" fill="#FFD020" transform="rotate(0) translate(0,-11)"/>
+    <ellipse rx="7" ry="15" fill="#EEC010" transform="rotate(30) translate(0,-11)"/>
+    <ellipse rx="7" ry="15" fill="#FFD020" transform="rotate(60) translate(0,-11)"/>
+    <ellipse rx="7" ry="15" fill="#EEC010" transform="rotate(90) translate(0,-11)"/>
+    <ellipse rx="7" ry="15" fill="#FFD020" transform="rotate(120) translate(0,-11)"/>
+    <ellipse rx="7" ry="15" fill="#EEC010" transform="rotate(150) translate(0,-11)"/>
+    <ellipse rx="7" ry="15" fill="#FFD020" transform="rotate(180) translate(0,-11)"/>
+    <ellipse rx="7" ry="15" fill="#EEC010" transform="rotate(210) translate(0,-11)"/>
+    <ellipse rx="7" ry="15" fill="#FFD020" transform="rotate(240) translate(0,-11)"/>
+    <ellipse rx="7" ry="15" fill="#EEC010" transform="rotate(270) translate(0,-11)"/>
+    <ellipse rx="7" ry="15" fill="#FFD020" transform="rotate(300) translate(0,-11)"/>
+    <ellipse rx="7" ry="15" fill="#EEC010" transform="rotate(330) translate(0,-11)"/>
+    <circle r="13" fill="#7A4008"/>
+    <circle r="8" fill="#5A2E04"/>
+    <circle cx="0" cy="-5" r="2" fill="#8A5010" opacity="0.7"/>
+    <circle cx="4" cy="3" r="2" fill="#8A5010" opacity="0.7"/>
+    <circle cx="-4" cy="3" r="2" fill="#8A5010" opacity="0.7"/>
+   </g></svg>`},
+  {name:'Marigold',
+   svg:`<svg viewBox="0 0 60 60"><g transform="translate(30,30)">
+    <ellipse rx="9" ry="15" fill="#FF8020" transform="rotate(0) translate(0,-9)"/>
+    <ellipse rx="9" ry="15" fill="#FF9030" transform="rotate(40) translate(0,-9)"/>
+    <ellipse rx="9" ry="15" fill="#FF8020" transform="rotate(80) translate(0,-9)"/>
+    <ellipse rx="9" ry="15" fill="#FF9030" transform="rotate(120) translate(0,-9)"/>
+    <ellipse rx="9" ry="15" fill="#FF8020" transform="rotate(160) translate(0,-9)"/>
+    <ellipse rx="9" ry="15" fill="#FF9030" transform="rotate(200) translate(0,-9)"/>
+    <ellipse rx="9" ry="15" fill="#FF8020" transform="rotate(240) translate(0,-9)"/>
+    <ellipse rx="9" ry="15" fill="#FF9030" transform="rotate(280) translate(0,-9)"/>
+    <ellipse rx="9" ry="15" fill="#FF8020" transform="rotate(320) translate(0,-9)"/>
+    <circle r="8" fill="#FFD040"/>
+    <circle r="4" fill="#E0A020"/>
+   </g></svg>`},
+  {name:'Poppy',
+   svg:`<svg viewBox="0 0 60 60"><g transform="translate(30,30)">
+    <ellipse rx="15" ry="17" fill="#E83030" transform="rotate(0) translate(0,-8)"/>
+    <ellipse rx="15" ry="17" fill="#D02020" transform="rotate(90) translate(0,-8)"/>
+    <ellipse rx="15" ry="17" fill="#E83030" transform="rotate(180) translate(0,-8)"/>
+    <ellipse rx="15" ry="17" fill="#D02020" transform="rotate(270) translate(0,-8)"/>
+    <circle r="9" fill="#1A0808"/>
+    <circle r="5" fill="#2A1010"/>
+    <circle cx="0" cy="-3" r="1.5" fill="#5A1010" opacity="0.8"/>
+   </g></svg>`},
+];
+
+// Golden flower SVG
+const GOLDEN_SVG = `<svg viewBox="0 0 60 60"><g transform="translate(30,30)">
+  <ellipse rx="9" ry="17" fill="#FFD700" transform="rotate(0) translate(0,-9)"/>
+  <ellipse rx="9" ry="17" fill="#FFC000" transform="rotate(72) translate(0,-9)"/>
+  <ellipse rx="9" ry="17" fill="#FFD700" transform="rotate(144) translate(0,-9)"/>
+  <ellipse rx="9" ry="17" fill="#FFC000" transform="rotate(216) translate(0,-9)"/>
+  <ellipse rx="9" ry="17" fill="#FFD700" transform="rotate(288) translate(0,-9)"/>
+  <circle r="7" fill="#FFF8DC"/>
+  <circle r="3.5" fill="#FFD020"/>
+  <circle cx="0" cy="-3" r="1" fill="#FFA500"/>
+  <circle cx="3" cy="1" r="1" fill="#FFA500"/>
+  <circle cx="-3" cy="1" r="1" fill="#FFA500"/>
+ </g></svg>`;
+
+// Populate collection icons
+FLOWERS.forEach((f,i) => {
+  const el = document.getElementById('fi'+i);
+  if(el) el.innerHTML = f.svg;
+});
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let score = 0, timeLeft = 60, gameActive = false, gamePaused = false;
+let collections = new Array(FLOWERS.length).fill(0);
+let musicOn = true, sfxOn = true;
+let audioCtx = null, bgMusicTimer = null;
+let spawnTimer = null, cdTimer = null;
+let melodyIndex = 0;
+let combo = 0, comboTimer = null, maxCombo = 0;
+let streak = 0;
+let highScore = parseInt(localStorage.getItem('blossomHighScore') || '0');
+let difficulty = 'easy';
+let currentSpawnInterval = 660;
+let spawnAccelTimer = null;
+
+// Difficulty settings
+const DIFFICULTY = {
+  easy:   { spawnMs: 820, speedMin: 2.2, speedMax: 1.8, timeBonus: 0 },
+  normal: { spawnMs: 660, speedMin: 2.8, speedMax: 2.2, timeBonus: 0 },
+  hard:   { spawnMs: 440, speedMin: 3.6, speedMax: 3.0, timeBonus: 0 },
+};
+
+const basket = document.getElementById('basket');
+const scoreValEl = document.getElementById('scoreVal');
+const timeValEl = document.getElementById('timeVal');
+const flashEl = document.getElementById('flash');
+const cursor = document.getElementById('cursor');
+
+// Show best score on start screen
+document.getElementById('bestScoreDisplay').textContent = `🏆 Best: ${highScore} flowers`;
+
+function setDifficulty(d) {
+  difficulty = d;
+  document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('diff-'+d).classList.add('active');
+}
+
+// ─── INPUT ────────────────────────────────────────────────────────────────────
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top = e.clientY + 'px';
+  if(!gameActive || gamePaused) return;
+  moveBasket(e.clientX);
+});
+
+document.addEventListener('touchmove', e => {
+  if(!gameActive || gamePaused) return;
+  moveBasket(e.touches[0].clientX);
+  e.preventDefault();
+}, {passive:false});
+
+// Keyboard: Space = pause, Escape = exit
+document.addEventListener('keydown', e => {
+  if(e.code === 'Space' && gameActive) { e.preventDefault(); togglePause(); }
+  if(e.code === 'Escape' && gameActive) { e.preventDefault(); togglePause(); }
+});
+
+function moveBasket(cx) {
+  const half = basket.offsetWidth / 2;
+  const clampedX = Math.max(half, Math.min(window.innerWidth - half, cx));
+  basket.style.left = (clampedX - half) + 'px';
+  basket.style.transform = 'none';
+}
+
+// ─── GAME FLOW ────────────────────────────────────────────────────────────────
+function startGame() {
+  document.getElementById('startScreen').style.display = 'none';
+  resetState();
+  gameActive = true;
+  initAudio();
+  spawnBgPetals();
+  const cfg = DIFFICULTY[difficulty];
+  currentSpawnInterval = cfg.spawnMs;
+  spawnTimer = setInterval(spawnFlower, currentSpawnInterval);
+  cdTimer = setInterval(tick, 1000);
+  // Speed ramp every 15 seconds
+  spawnAccelTimer = setInterval(rampSpeed, 15000);
+}
+
+function resetState() {
+  score = 0; timeLeft = 60; combo = 0; maxCombo = 0; streak = 0;
+  collections = new Array(FLOWERS.length).fill(0);
+  scoreValEl.textContent = '00';
+  timeValEl.textContent = '01:00';
+  timeValEl.style.color = '#C83060';
+  collections.forEach((_,i) => {
+    const cc = document.getElementById('fc'+i);
+    if(cc) cc.textContent = '00';
+  });
+  document.getElementById('streakDisplay').style.opacity = '0';
+  document.getElementById('comboDisplay').style.opacity = '0';
+  document.querySelectorAll('.flower').forEach(f => f.remove());
+}
+
+function rampSpeed() {
+  if(!gameActive || gamePaused) return;
+  currentSpawnInterval = Math.max(250, currentSpawnInterval - 80);
+  clearInterval(spawnTimer);
+  spawnTimer = setInterval(spawnFlower, currentSpawnInterval);
+  showLevelUp();
+}
+
+function showLevelUp() {
+  const badge = document.getElementById('levelUpBadge');
+  badge.style.opacity = '1';
+  setTimeout(() => { badge.style.opacity = '0'; }, 1800);
+}
+
+function tick() {
+  if(!gameActive || gamePaused) return;
+  timeLeft--;
+  const m = String(Math.floor(timeLeft/60)).padStart(2,'0');
+  const s = String(timeLeft % 60).padStart(2,'0');
+  timeValEl.textContent = m + ':' + s;
+  if(timeLeft <= 10) timeValEl.style.color = '#D01010';
+  if(timeLeft <= 0) endGame();
+}
+
+function endGame() {
+  gameActive = false;
+  clearInterval(spawnTimer);
+  clearInterval(cdTimer);
+  clearInterval(spawnAccelTimer);
+  if(bgMusicTimer) clearInterval(bgMusicTimer);
+  document.querySelectorAll('.flower').forEach(f => f.remove());
+
+  // Check high score
+  let isNew = false;
+  if(score > highScore) {
+    highScore = score;
+    localStorage.setItem('blossomHighScore', highScore);
+    isNew = true;
+  }
+
+  document.getElementById('goScore').textContent = score;
+  document.getElementById('goBest').textContent = highScore;
+  document.getElementById('goCombo').textContent = maxCombo + 'x';
+  document.getElementById('goNewBest').style.display = isNew ? 'block' : 'none';
+
+  // Breakdown
+  const breakdown = document.getElementById('goBreakdown');
+  breakdown.innerHTML = '';
+  FLOWERS.forEach((f,i) => {
+    if(collections[i] > 0) {
+      const div = document.createElement('div');
+      div.className = 'go-item';
+      div.innerHTML = `<span class="gi">${f.svg}</span><span>${f.name}: ${collections[i]}</span>`;
+      breakdown.appendChild(div);
+    }
+  });
+
+  document.getElementById('gameOver').style.display = 'flex';
+}
+
+function togglePause() {
+  if(!gameActive) return;
+  gamePaused = !gamePaused;
+  const ps = document.getElementById('pauseScreen');
+  if(gamePaused) {
+    ps.style.display = 'flex';
+    document.getElementById('pauseScore').textContent = String(score).padStart(2,'0');
+    const m = String(Math.floor(timeLeft/60)).padStart(2,'0');
+    const s = String(timeLeft % 60).padStart(2,'0');
+    document.getElementById('pauseTimer').textContent = `⏱ Time remaining: ${m}:${s}`;
+    // Populate pause collection
+    const pc = document.getElementById('pauseCollection');
+    pc.innerHTML = '';
+    FLOWERS.forEach((f,i) => {
+      const d = document.createElement('div');
+      d.className = 'pc-item';
+      d.innerHTML = `<span class="pci">${f.svg}</span><span>${collections[i]}</span>`;
+      pc.appendChild(d);
+    });
+    document.getElementById('pauseBtn').textContent = '▶ RESUME';
+    if(bgMusicTimer){ clearInterval(bgMusicTimer); bgMusicTimer = null; }
+  } else {
+    ps.style.display = 'none';
+    document.getElementById('pauseBtn').textContent = '⏸ PAUSE';
+    if(musicOn && audioCtx) startBgMusic();
+  }
+}
+
+function newGame() {
+  // Stop everything and go to start screen
+  gameActive = false; gamePaused = false;
+  clearInterval(spawnTimer); clearInterval(cdTimer); clearInterval(spawnAccelTimer);
+  if(bgMusicTimer){ clearInterval(bgMusicTimer); bgMusicTimer = null; }
+  document.querySelectorAll('.flower').forEach(f => f.remove());
+  document.getElementById('pauseScreen').style.display = 'none';
+  document.getElementById('gameOver').style.display = 'none';
+  document.getElementById('startScreen').style.display = 'flex';
+  document.getElementById('bestScoreDisplay').textContent = `🏆 Best: ${highScore} flowers`;
+}
+
+function restartGame() {
+  document.getElementById('gameOver').style.display = 'none';
+  startGame();
+}
+
+function goToStart() {
+  document.getElementById('gameOver').style.display = 'none';
+  newGame();
+}
+
+function exitGame() {
+  // Show pause screen with score before exit confirmation
+  if(gameActive && !gamePaused) togglePause();
+  else if(!gameActive) {
+    // On game over screen - just go to start
+    newGame();
+  }
+}
+
+function toggleMusic() {
+  musicOn = !musicOn;
+  document.getElementById('musicBtn').classList.toggle('off', !musicOn);
+  if(musicOn && audioCtx && !gamePaused) startBgMusic();
+  else if(bgMusicTimer) { clearInterval(bgMusicTimer); bgMusicTimer = null; }
+}
+
+function toggleSFX() {
+  sfxOn = !sfxOn;
+  document.getElementById('sfxBtn').classList.toggle('off', !sfxOn);
+}
+
+// ─── COMBO SYSTEM ─────────────────────────────────────────────────────────────
+function updateCombo() {
+  combo++;
+  streak++;
+  if(combo > maxCombo) maxCombo = combo;
+
+  // Update streak display
+  if(streak >= 3) {
+    const sd = document.getElementById('streakDisplay');
+    sd.style.opacity = '1';
+    document.getElementById('streakCount').textContent = streak + ' streak!';
+  }
+
+  if(combo >= 3) {
+    const comboDiv = document.getElementById('comboDisplay');
+    const comboText = document.getElementById('comboText');
+    comboText.textContent = `🔥 ${combo}x COMBO!`;
+    comboDiv.style.opacity = '1';
+    comboDiv.querySelector('.combo-text').style.animation = 'none';
+    setTimeout(() => { comboDiv.querySelector('.combo-text').style.animation = 'comboPop 0.3s ease'; }, 10);
+  }
+
+  if(comboTimer) clearTimeout(comboTimer);
+  comboTimer = setTimeout(() => {
+    combo = 0; streak = 0;
+    document.getElementById('comboDisplay').style.opacity = '0';
+    document.getElementById('streakDisplay').style.opacity = '0';
+  }, 2200);
+}
+
+// ─── FLOWER SPAWNING ──────────────────────────────────────────────────────────
+function spawnFlower() {
+  if(!gameActive || gamePaused) return;
+  const el = document.createElement('div');
+  el.className = 'flower';
+  const cfg = DIFFICULTY[difficulty];
+
+  // 8% chance of golden flower
+  const isGolden = Math.random() < 0.08;
+  let type;
+  if(isGolden) {
+    el.innerHTML = GOLDEN_SVG;
+    el.classList.add('golden');
+    el.dataset.type = -1; // golden
+  } else {
+    type = Math.floor(Math.random() * FLOWERS.length);
+    el.innerHTML = FLOWERS[type].svg;
+    el.dataset.type = type;
+  }
+
+  let x = 30 + Math.random() * (window.innerWidth - 90);
+  let y = -65;
+  let rot = Math.random() * 360;
+  const rotSpd = (Math.random() - 0.5) * 3.5;
+  const spd = cfg.speedMin + Math.random() * cfg.speedMax;
+  const wobble = (Math.random() - 0.5) * 0.6;
+
+  el.style.cssText = `left:${x}px;top:${y}px;`;
+  document.getElementById('game').appendChild(el);
+
+  const id = setInterval(() => {
+    if(!gameActive) { el.remove(); clearInterval(id); return; }
+    if(gamePaused) return; // freeze position while paused
+    y += spd;
+    x += wobble;
+    rot += rotSpd;
+    el.style.top = y + 'px';
+    el.style.left = x + 'px';
+    el.style.transform = `rotate(${rot}deg)`;
+
+    // collision
+    const br = basket.getBoundingClientRect();
+    const fr = el.getBoundingClientRect();
+    if(fr.bottom > br.top + 6 && fr.top < br.bottom - 8 &&
+       fr.left < br.right - 8 && fr.right > br.left + 8) {
+      const pts = isGolden ? 3 : 1;
+      const comboBonus = combo >= 3 ? 1 : 0;
+      score += pts + comboBonus;
+      scoreValEl.textContent = String(score).padStart(2,'0');
+      if(!isGolden) {
+        collections[type]++;
+        const cc = document.getElementById('fc'+type);
+        if(cc) cc.textContent = String(collections[type]).padStart(2,'0');
+      }
+      showFlash(fr.left + fr.width/2, fr.top, type, pts + comboBonus, isGolden);
+      playCatch(isGolden);
+      updateCombo();
+      el.remove(); clearInterval(id);
+      return;
+    }
+    if(y > window.innerHeight + 70) {
+      // Miss — reset combo
+      combo = 0;
+      document.getElementById('comboDisplay').style.opacity = '0';
+      el.remove(); clearInterval(id);
+    }
+  }, 18);
+}
+
+function showFlash(x, y, type, pts, isGolden) {
+  const colors = ['#E85080','#888','#9060D0','#B07010','#CC5010','#C01010'];
+  const col = isGolden ? '#FFD700' : (colors[type] || '#E85080');
+  flashEl.style.cssText = `left:${x}px;top:${y - 25}px;color:${col};opacity:1;font-size:${pts > 1 ? '32px' : '24px'};`;
+  flashEl.textContent = '+' + pts + (isGolden ? ' ⭐' : '');
+  setTimeout(() => { flashEl.style.opacity = '0'; }, 480);
+}
+
+// ─── BACKGROUND PETALS ────────────────────────────────────────────────────────
+function spawnBgPetals() {
+  for(let i = 0; i < 22; i++) {
+    const p = document.createElement('div');
+    p.className = 'bgpetal';
+    p.innerHTML = `<svg width="13" height="13" viewBox="0 0 13 13"><ellipse cx="6.5" cy="6.5" rx="3.5" ry="5.5" fill="#FFB7C5" transform="rotate(${Math.random()*360},6.5,6.5)"/></svg>`;
+    p.style.cssText = `left:${Math.random()*100}vw;animation-duration:${4+Math.random()*7}s;animation-delay:${Math.random()*7}s;`;
+    document.getElementById('game').appendChild(p);
+  }
+}
+
+// ─── AUDIO ────────────────────────────────────────────────────────────────────
+function initAudio() {
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    startBgMusic();
+  } catch(e) {}
+}
+
+function startBgMusic() {
+  if (!audioCtx || !musicOn || bgMusicTimer) return;
+  const melody = [440.00, 493.88, 523.25, 659.25, 698.46, 659.25, 523.25, 493.88];
+  bgMusicTimer = setInterval(() => {
+    if (!musicOn || !gameActive || gamePaused) return;
+    let osc = audioCtx.createOscillator();
+    let gain = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(melody[melodyIndex], audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.4);
+    melodyIndex = (melodyIndex + 1) % melody.length;
+  }, 450);
+}
+
+function playCatch(isGolden) {
+  if (!audioCtx || !sfxOn) return;
+  let osc = audioCtx.createOscillator();
+  let gain = audioCtx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(isGolden ? 880 : 587.33, audioCtx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(isGolden ? 1318.5 : 880.00, audioCtx.currentTime + 0.15);
+  gain.gain.setValueAtTime(isGolden ? 0.22 : 0.15, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.18);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + 0.2);
+}
+</script>
+</div>
+</body>
+</html>
