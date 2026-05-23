@@ -4,6 +4,8 @@ A beautiful and interactive browser game built with **HTML, CSS, and JavaScript*
 
 **Live Demo**: https://kaveeshamalindi.github.io/Flower_Catcher/
 
+⚠️ For the best gameplay experience, please use the desktop version.  
+
 ---
 
 ## 🎮 Gameplay
