@@ -34,6 +34,20 @@ Try to survive 60 seconds and achieve the highest score!
 - 🎨 Animated scenic background (mountains, lake, cherry blossoms)
 - 📱 Mouse & touch controls support
 
+## 📷 Screenshots
+
+<p align="center">
+  <img src="Images/img1.png" width="500"><br>
+  <b>Figure 1:</b> Login Screen
+</p>
+
+<br>
+
+<p align="center">
+  <img src="Images/img2.png" width="500"><br>
+  <b>Figure 2:</b> Home Screen - Task Dashboard
+</p>
+
 ---
 
 ## 🕹 Controls
