@@ -2,7 +2,7 @@
 
 A beautiful and interactive browser game built with **HTML, CSS, and JavaScript** where players catch falling flowers using a basket. The game includes scoring, combos, difficulty levels, animations, and sound effects.
 
-Live Demo: https://kaveeshamalindi.github.io/Flower_Catcher/
+**Live Demo**: https://kaveeshamalindi.github.io/Flower_Catcher/
 
 ---
 
@@ -38,9 +38,8 @@ Try to survive 60 seconds and achieve the highest score!
 
 | Action        | Control           |
 |---------------|------------------|
-| Move Basket   | Mouse / Touch    |
-| Pause / Resume| Space / Esc / Button |
-| Restart       | Button click     |
+| Move Basket   | Mouse |
+| Pause / Resume| Space / Esc / Button click|
 | Exit          | Button click     |
 
 ---
@@ -66,4 +65,54 @@ No installation or dependencies required.
 
 ## 📂 Project Structure
 
+```
+Blossom Catch
+│
+├── index.html # Complete game (HTML + CSS + JS)
+```
+
+---
+
+## 🔊 Audio System
+
+- Background melody using Web Audio API
+- Different sound effects for normal and golden flowers
+- No external audio files required
+
+---
+
+## 🏆 High Score
+
+- Automatically saved using `localStorage`
+- Updates when a new best score is achieved
+
+---
+
+## 🎨 UI Highlights
+
+- Animated cherry blossom theme
+- Custom basket design (SVG)
+- Floating petals background effect
+- Combo & streak visual feedback
+- Level-up speed increase system
+
+---
+
+## 📌 Future Improvements
+
+- Power-ups (slow motion, magnet, shield)
+- Leaderboard system
+- Mobile vibration feedback
+- More flower types & seasons
+- Multiplayer mode
+
+---
+
+## 📄 License
+
+This project is free to use for learning and personal development.
+
+---
+
+<img src="https://media.giphy.com/media/ObNTw8Uzwy6KQ/giphy.gif" width="30px"> Don't forget to hit the ⭐ if you like this repo. <img src="https://media.giphy.com/media/ObNTw8Uzwy6KQ/giphy.gif" width="30px">
 
