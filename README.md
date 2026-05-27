@@ -10,10 +10,10 @@ A beautiful and interactive browser game built with **HTML, CSS, and JavaScript*
 
 ## 🎮 Gameplay
 
-Move your basket left and right to catch falling flowers before they reach the ground.  
-Each flower gives points, and special golden flowers give bonus points.
+- Move your basket left and right to catch falling flowers before they reach the ground.  
+- Each flower gives points, and special golden flowers give bonus points.
 
-Try to survive 60 seconds and achieve the highest score!
+**Try to survive 60 seconds and achieve the highest score !**
 
 ---
 
@@ -38,14 +38,21 @@ Try to survive 60 seconds and achieve the highest score!
 
 <p align="center">
   <img src="Images/img1.png" width="500"><br>
-  <b>Figure 1:</b> Login Screen
+  <b>Figure 1:</b> Main Screen
 </p>
 
 <br>
 
 <p align="center">
   <img src="Images/img2.png" width="500"><br>
-  <b>Figure 2:</b> Home Screen - Task Dashboard
+  <b>Figure 2:</b> Playground
+</p>
+
+<br>
+
+<p align="center">
+  <img src="Images/img3.png" width="500"><br>
+  <b>Figure 3:</b> Pause Option
 </p>
 
 ---
