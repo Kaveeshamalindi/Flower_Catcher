@@ -34,6 +34,8 @@ A beautiful and interactive browser game built with **HTML, CSS, and JavaScript*
 - 🎨 Animated scenic background (mountains, lake, cherry blossoms)
 - 📱 Mouse & touch controls support
 
+---
+
 ## 📷 Screenshots
 
 <p align="center">
